@@ -19,7 +19,20 @@ GitHub Pages にアクセスした際に、現在時刻を基準とした 1 時�
 - コピー成功時に「コピーしました」のフィードバック表示
 - エラーハンドリング実装
 
-### 3. UI/UXデザイン
+### 3. Google Analytics 4 (GA4) アクセス解析
+- **ページビュートラッキング**
+  - gtag.jsによる自動ページビュー計測
+  - 測定ID: `G-C01JZ7W0PX`
+- **カスタムイベントトラッキング**
+  - `copy_break_time`: コピーボタンクリック時に送信（成功時）
+  - `copy_error`: コピー失敗時に送信
+  - イベントカテゴリとラベルによる分類
+- **データ収集項目**
+  - ページビュー数、ユニークユーザー数、セッション数
+  - デバイス・ブラウザ情報
+  - コピーボタンのエンゲージメント率
+
+### 4. UI/UXデザイン
 - **レスポンシブデザイン**
   - デスクトップ（769px以上）: 縦並び配置、画面幅の33%（最小400px、最大800px）
   - タブレット・スマートフォン（768px以下）: 縦並び配置、全幅表示、フォントサイズ調整
@@ -43,6 +56,10 @@ GitHub Pages にアクセスした際に、現在時刻を基準とした 1 時�
   - Clipboard API によるコピー機能
   - DOM操作とイベント処理
   - async/await によるエラーハンドリング
+- **Google Analytics 4 (gtag.js)**:
+  - ページビューの自動トラッキング
+  - カスタムイベントトラッキング
+  - ユーザー行動分析
 
 ### ファイル構成
 ```
@@ -64,15 +81,31 @@ function formatTime(date) {
 }
 ```
 
-### コピー機能
+### コピー機能とGA4イベントトラッキング
 ```javascript
 async function copyToClipboard() {
     try {
         await navigator.clipboard.writeText(currentMessage);
         showFeedback('コピーしました');
+
+        // Google Analytics イベント送信
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'copy_break_time', {
+                'event_category': 'engagement',
+                'event_label': 'copy_button_click'
+            });
+        }
     } catch (err) {
         console.error('コピーに失敗しました:', err);
         showFeedback('コピーに失敗しました');
+
+        // Google Analytics エラーイベント送信
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'copy_error', {
+                'event_category': 'error',
+                'event_label': 'copy_failed'
+            });
+        }
     }
 }
 ```
@@ -123,10 +156,44 @@ async function copyToClipboard() {
 }
 ```
 
+## Google Analytics 4 セットアップ
+
+### 測定ID設定
+現在の測定ID: `G-C01JZ7W0PX`
+
+### トラッキングコード
+[index.html](index.html) の `<head>` セクションに以下のコードを実装済み:
+```html
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C01JZ7W0PX"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-C01JZ7W0PX');
+</script>
+```
+
+### トラッキングイベント一覧
+| イベント名 | トリガー | カテゴリ | ラベル |
+|-----------|---------|---------|--------|
+| `copy_break_time` | コピー成功 | engagement | copy_button_click |
+| `copy_error` | コピー失敗 | error | copy_failed |
+| `page_view` | ページ表示 | (自動) | (自動) |
+
+### Google Analytics管理画面での確認方法
+1. https://analytics.google.com/ にアクセス
+2. プロパティ「Break Time Page」を選択
+3. **リアルタイム**レポートで即座にアクセスを確認可能
+4. **イベント**レポートで`copy_break_time`と`copy_error`を確認
+5. **エンゲージメント > ページとスクリーン**でページビューを確認
+
 ## 対応ブラウザ・デバイス
 - **デスクトップ**: Chrome, Firefox, Safari, Edge（最新版）
 - **モバイル**: iOS Safari, Chrome for Android
-- **要件**: Clipboard API 対応ブラウザ
+- **要件**: Clipboard API 対応ブラウザ、JavaScript有効
 
 ## デプロイメント
 GitHub Pages での静的サイトホスティングに対応。`index.html` をリポジトリのルートまたは `docs/` フォルダに配置することでアクセス可能です。
+
+**デプロイURL**: https://hiroyukiisoe.github.io/breaktime/

@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>休憩時間表示</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C01JZ7W0PX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-C01JZ7W0PX');
+    </script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -179,9 +189,25 @@
             try {
                 await navigator.clipboard.writeText(currentMessage);
                 showFeedback('コピーしました');
+
+                // Google Analytics イベント送信
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'copy_break_time', {
+                        'event_category': 'engagement',
+                        'event_label': 'copy_button_click'
+                    });
+                }
             } catch (err) {
                 console.error('コピーに失敗しました:', err);
                 showFeedback('コピーに失敗しました');
+
+                // Google Analytics エラーイベント送信
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'copy_error', {
+                        'event_category': 'error',
+                        'event_label': 'copy_failed'
+                    });
+                }
             }
         }
         
