@@ -20,17 +20,25 @@ GitHub Pages にアクセスした際に、現在時刻を基準とした 1 時�
 - エラーハンドリング実装
 
 ### 3. UI/UXデザイン
-- レスポンシブデザイン
-- テキストボックスとコピーボタンの横並び配置
+- **レスポンシブデザイン**
+  - デスクトップ（769px以上）: 縦並び配置、画面幅の33%（最小400px、最大800px）
+  - タブレット・スマートフォン（768px以下）: 縦並び配置、全幅表示、フォントサイズ調整
+  - 小型スマートフォン（480px以下）: より小さなフォントサイズと余白の最適化
 - ホバー効果とアニメーション
 - 上寄せレイアウト
+- タップ領域の最適化（モバイルフレンドリー）
+- テキストボックスとボタンの幅を統一
 
 ## 技術仕様
 
 ### 使用技術
-- **HTML5**: セマンティックなマークアップ
-- **CSS3**: Flexbox、トランジション、ホバー効果
-- **JavaScript (ES6+)**: 
+- **HTML5**: セマンティックなマークアップ、viewport設定
+- **CSS3**:
+  - Flexbox による柔軟なレイアウト
+  - メディアクエリ（`@media`）によるレスポンシブ対応（768px, 480pxブレークポイント）
+  - box-sizing: border-box による一貫した幅計算
+  - トランジション、ホバー効果
+- **JavaScript (ES6+)**:
   - Date API による時刻処理
   - Clipboard API によるコピー機能
   - DOM操作とイベント処理
@@ -74,9 +82,51 @@ async function copyToClipboard() {
 - `readonly` input要素による選択可能なテキスト表示
 - CSS transition による滑らかなユーザーインタラクション
 
-## 対応ブラウザ
-- モダンブラウザ（Chrome, Firefox, Safari, Edge）
-- Clipboard API 対応ブラウザ
+### レスポンシブ対応
+```css
+/* デスクトップ: 縦並び配置 */
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 33%;
+    min-width: 400px;
+    max-width: 800px;
+}
+
+.break-input, .copy-button {
+    width: 100%; /* コンテナ内で全幅 */
+}
+
+/* タブレット・スマートフォン（768px以下）*/
+@media (max-width: 768px) {
+    .container {
+        width: 100%; /* 画面幅いっぱい */
+        max-width: 100%;
+    }
+    .break-input {
+        font-size: 1.2rem; /* フォントサイズ調整 */
+    }
+    .copy-button {
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* 小型スマートフォン（480px以下）*/
+@media (max-width: 480px) {
+    .break-input {
+        font-size: 1rem; /* さらに小さく */
+    }
+    .copy-button {
+        font-size: 1rem;
+    }
+}
+```
+
+## 対応ブラウザ・デバイス
+- **デスクトップ**: Chrome, Firefox, Safari, Edge（最新版）
+- **モバイル**: iOS Safari, Chrome for Android
+- **要件**: Clipboard API 対応ブラウザ
 
 ## デプロイメント
 GitHub Pages での静的サイトホスティングに対応。`index.html` をリポジトリのルートまたは `docs/` フォルダに配置することでアクセス可能です。
